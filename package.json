@@ -1,0 +1,13 @@
+{
+  "name": "tron-transferfrom-sweeper",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": { 
+    "start": "node index.js" 
+  },
+  "dependencies": {
+    "tronweb": "^5.3.0",
+    "axios": "^1.6.0",
+    "dotenv": "^16.4.0"
+  }
+}
