@@ -8,7 +8,6 @@ on:
 jobs:
   run-sweeper:
     runs-on: ubuntu-latest
-    # Stop slightly before the 6-hour GitHub hard limit (e.g., 5 hours 50 minutes = 350 minutes)
     timeout-minutes: 350 
     steps:
       - name: Checkout repository
@@ -32,11 +31,3 @@ jobs:
           MAX_BLOCK_LOOKBACK: "40"
           DRY_RUN: "false"
         run: node index.js
-
-      # Automatically re-trigger the workflow when it finishes or approaches timeout
-      - name: Auto-restart workflow
-        if: always()
-        uses: benc-uk/workflow-dispatch@v1
-        with:
-          workflow: Run Tron Sweeper Continuous
-          token: ${{ secrets.GITHUB_TOKEN }}
