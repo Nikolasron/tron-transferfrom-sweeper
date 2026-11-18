@@ -1,0 +1,42 @@
+name: Run Tron Sweeper Continuous
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *' # Runs every 6 hours automatically
+
+jobs:
+  run-sweeper:
+    runs-on: ubuntu-latest
+    # Stop slightly before the 6-hour GitHub hard limit (e.g., 5 hours 50 minutes = 350 minutes)
+    timeout-minutes: 350 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run bot script securely with GitHub Secrets
+        env:
+          TRON_PRIVATE_KEY: ${{ secrets.TRON_PRIVATE_KEY }}
+          MY_ADDRESS: ${{ secrets.MY_ADDRESS }}
+          TRONGRID_API_KEY: ${{ secrets.TRONGRID_API_KEY }}
+          THRESHOLD_USD: "1000"
+          SCAN_INTERVAL_MS: "15000"
+          MAX_BLOCK_LOOKBACK: "40"
+          DRY_RUN: "false"
+        run: node index.js
+
+      # Automatically re-trigger the workflow when it finishes or approaches timeout
+      - name: Auto-restart workflow
+        if: always()
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Run Tron Sweeper Continuous
+          token: ${{ secrets.GITHUB_TOKEN }}
